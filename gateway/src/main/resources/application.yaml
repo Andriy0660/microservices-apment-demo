@@ -1,0 +1,51 @@
+server:
+  port: 8083
+
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    username: root
+    password: root
+    url: jdbc:postgresql://localhost:5435/user
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    database: postgresql
+    open-in-view: false
+
+  application:
+    name: Api-Gateway
+  cloud:
+    gateway:
+      routes:
+        - id: Authentication
+          uri: lb://Authentication
+          predicates:
+            - Path=/api/v1/auth/**
+
+        - id: User
+          uri: lb://User
+          predicates:
+            - Path=/api/v1/user/**
+          filters:
+            - AuthFilter
+        - id: Smtp
+          uri: lb://Smtp
+          predicates:
+            - Path=/api/v1/email/**
+          filters:
+            - AuthFilter
+
+
+eureka:
+  client:
+    fetch-registry: true
+    register-with-eureka: true
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+
+
+
+
+jwt_secret_key:
+    3F4428472B4B6250645367566B5970337336763979244226452948404D6351665468576D5A7134743777217A25432A462D4A614E645267556B586E3272357538
+

@@ -1,0 +1,49 @@
+services:
+  postgres:
+    container_name: postgres_apment
+    image: postgres
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+    volumes:
+      - postgres_volume:/var/lib/postgresql/data
+    networks:
+      - postgres_micro
+    ports:
+      - "5435:5432"
+    restart: unless-stopped
+
+  pgadmin:
+    container_name: pgadmin_apment
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-pgadmin4@pgadmin.org}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin}
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    volumes:
+      - pgadmin:/var/lib/pgadmin
+    ports:
+      - "5050:80"
+    networks:
+      - postgres_micro
+    restart: unless-stopped
+
+
+  rabbitmq:
+    image: rabbitmq:management-alpine
+    container_name: rabbitmq_apment
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - spring
+
+
+networks:
+  postgres_micro:
+    driver: bridge
+  spring:
+    driver: bridge
+volumes:
+  postgres_volume:
+  pgadmin:
